@@ -1,28 +1,30 @@
 import { NextResponse } from "next/server";
 
-const API_KEY = process.env.TMDB_READ_ACCESS_TOKEN;
-
 export async function GET() {
-  try {
-    const res = await fetch(
-  "https://api.themoviedb.org/3/trending/movie/week",
-  {
-    headers: {
-      Authorization: `Bearer ${API_KEY}`,
-      accept: "application/json",
+  const res = await fetch(
+    "https://api.themoviedb.org/3/trending/movie/week",
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
+        accept: "application/json",
+      },
+    }
+  );
+const data = await res.json();
+
+if (!res.ok) {
+  return NextResponse.json(data, { status: res.status });
+}
+
+if (!Array.isArray(data.results)) {
+  return NextResponse.json(
+    {
+      error: "TMDB did not return results",
+      data,
     },
-  }
-);
-    const data = await res.json();
+    { status: 500 }
+  );
+}
 
-    const randomMovie =
-      data.results[Math.floor(Math.random() * data.results.length)];
-
-    return NextResponse.json(randomMovie);
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message },
-      { status: 500 }
-    );
-  }
+return NextResponse.json(data.results[0]);
 }

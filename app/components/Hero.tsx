@@ -42,7 +42,7 @@ export default function Hero() {
         </h1>
 
         <div className="flex items-center gap-6 mt-6 text-lg text-gray-300">
-          <span>⭐ {movie.vote_average.toFixed(1)}</span>
+          <span>⭐ {movie.vote_average?.toFixed(1) ?? "N/A"}</span>
           <span>📅 {movie.release_date}</span>
           <span className="text-red-400">🔥 Trending</span>
         </div>
