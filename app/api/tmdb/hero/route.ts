@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+
+export const dynamic = "force-dynamic";import { NextResponse } from "next/server";
 
 const API_KEY = process.env.TMDB_API_KEY;
 
