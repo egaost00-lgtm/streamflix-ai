@@ -13,5 +13,8 @@ export async function GET() {
     return NextResponse.json(data, { status: res.status });
   }
 
-  return NextResponse.json(data.results[0]);
+  const randomMovie =
+  data.results[Math.floor(Math.random() * data.results.length)];
+
+return NextResponse.json(randomMovie);
 }
