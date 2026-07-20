@@ -1,20 +1,17 @@
-import OpenAI from "openai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
-});
+
 export async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
 
-   const model = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash"
-});
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash",
+    });
 
-   const result = await model.generateContent(`
+    const result = await model.generateContent(`
 You are an award-winning Hollywood screenwriter.
 
 Create a completely original blockbuster movie.
@@ -55,51 +52,22 @@ Rules:
 
     const text = result.response.text();
 
-const cleanText = text
-  .replace(/```json/g, "")
-  .replace(/```/g, "")
-  .trim();
+    const cleanText = text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
 
-const movie = JSON.parse(cleanText);
-const image = await openai.images.generate({
-  model: "gpt-image-1",
-  prompt: `
-Create a premium cinematic movie poster.
+    const movie = JSON.parse(cleanText);
 
-Title: ${movie.title}
-
-Tagline: ${movie.tagline}
-
-Genre: ${movie.genre}
-
-Description:
-${movie.posterPrompt}
-
-Ultra realistic.
-Hollywood blockbuster.
-Vertical 2:3 poster.
-No text except the movie title.
-Professional lighting.
-Highly detailed.
-`,
-  size: "1024x1536",
-});
-
-
-const posterBase64 = image.data?.[0]?.b64_json;
-
-return NextResponse.json({
-  ...movie,
-  posterBase64,
-});
+    return NextResponse.json(movie);
   } catch (error: any) {
-  console.error(error);
+    console.error(error);
 
-  return NextResponse.json(
-  {
-    error: error.message,
-  },
-  { status: 500 }
-);
+    return NextResponse.json(
+      {
+        error: error.message,
+      },
+      { status: 500 }
+    );
   }
 }
