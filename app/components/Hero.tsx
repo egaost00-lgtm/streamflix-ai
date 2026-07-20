@@ -8,21 +8,25 @@ export default function Hero() {
   const [movie, setMovie] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadHero() {
-      try {
-        const res = await fetch("/api/tmdb/hero");
-        const data = await res.json();
-        setMovie(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
+ useEffect(() => {
+  async function loadHero() {
+    try {
+      const res = await fetch("/api/tmdb/hero");
+      const data = await res.json();
+      setMovie(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
+  }
 
-    loadHero();
-  }, []);
+  loadHero();
+
+  const interval = setInterval(loadHero, 20000);
+
+  return () => clearInterval(interval);
+}, []);
 
   if (loading) {
     return (
