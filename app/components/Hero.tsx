@@ -1,68 +1,73 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export default function Hero() {
+  const [movie, setMovie] = useState<any>(null);
+
+  useEffect(() => {
+    fetch("/api/tmdb/hero")
+      .then((res) => res.json())
+      .then((data) => setMovie(data));
+  }, []);
+
+  if (!movie) {
+    return (
+      <section className="relative h-screen bg-black flex items-center justify-center">
+        <h1 className="text-white text-3xl">Loading...</h1>
+      </section>
+    );
+  }
+
   return (
-    <section className="relative h-screen overflow-hidden">
+    <section className="relative h-[78vh] overflow-hidden">
       <Image
-        src="/hero/hero.jpg"
-        alt="Hero"
+        src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+        alt={movie.title}
         fill
         priority
-        sizes="100vw"
         className="object-cover"
       />
 
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/50" />
-
-      {/* Left gradient */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent" />
-
-      {/* Bottom gradient */}
+      <div className="absolute inset-0 bg-black/70" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-black to-transparent" />
 
-      {/* Content */}
-      <div className="absolute left-24 top-1/2 -translate-y-1/2 z-20 max-w-3xl">
-        <h1 className="text-5xl lg:text-8xl font-black leading-none tracking-tight uppercase drop-shadow-2xl">
-  <span className="block text-white">UNLIMITED</span>
+      <div className="absolute left-16 lg:left-24 top-[55%] -translate-y-1/2 z-20 max-w-3xl">
 
-  <span className="block bg-gradient-to-r from-red-500 via-red-400 to-red-700 bg-clip-text text-transparent">
-    AI
-  </span>
-
-  <span className="block text-white">MOVIES</span>
-</h1>
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-none">
+          {movie.title}
+        </h1>
 
         <div className="flex items-center gap-6 mt-6 text-lg text-gray-300">
-  <span>⭐ 9.8/10</span>
-  <span>🎬 AI Original</span>
-  <span>🕒 2h 15m</span>
-  <span className="text-red-400">🔥 Trending</span>
-</div>
+          <span>⭐ {movie.vote_average.toFixed(1)}</span>
+          <span>📅 {movie.release_date}</span>
+          <span className="text-red-400">🔥 Trending</span>
+        </div>
 
-<p className="mt-5 max-w-2xl text-xl text-gray-300 leading-8">
-  Watch. Generate. Create.
-  <br />
-  Discover AI-powered cinema.
-</p>
+        <p className="mt-6 max-w-xl text-lg text-gray-300 leading-8 line-clamp-4">
+          {movie.overview}
+        </p>
 
-       <div className="flex items-center gap-4 mt-8">
-  <Link
-    href="/watch/1"
-    className="bg-white text-black px-5 py-3 rounded-xl font-bold hover:bg-gray-300 transition whitespace-nowrap"
-  >
-    ▶ Play
-  </Link>
+        <div className="flex gap-4 mt-8">
+          <Link
+            href={`/movie/${movie.id}`}
+            className="rounded-xl bg-white px-8 py-4 text-lg font-bold text-black transition hover:scale-105"
+          >
+            ▶ Play
+          </Link>
 
-  <button className="bg-white/10 backdrop-blur-lg border border-white/20 text-white px-5 py-3 rounded-xl font-bold hover:bg-white/20 transition whitespace-nowrap">
-    ℹ More Info
-  </button>
+          <button className="bg-white/10 border border-white/20 px-5 py-3 rounded-xl">
+            ℹ More Info
+          </button>
 
-  <button className="bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-xl font-bold transition whitespace-nowrap">
-    ❤️ Add to Watchlist
-  </button>
-</div>
+          <button className="bg-red-600 px-5 py-3 rounded-xl">
+            ❤️ Add to Watchlist
+          </button>
+        </div>
+
       </div>
     </section>
   );
