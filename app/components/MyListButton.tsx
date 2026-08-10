@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Check, Plus } from "lucide-react";
 import { saveMovie } from "@/lib/myList";
 
 type Props = {
@@ -12,32 +13,42 @@ type Props = {
 };
 
 export default function MyListButton({ movie }: Props) {
-    const [loading, setLoading] = useState(false);
-  return (
-   <button
-onClick={async () => {
+  const [loading, setLoading] = useState(false);
+  const [saved, setSaved] = useState(false);
 
+  async function handleSave() {
+    setLoading(true);
 
-  setLoading(true);
+    const success = await saveMovie({
+      movie_id: movie.id,
+      title: movie.title,
+      poster_url: movie.poster_path,
+    });
 
-  const success = await saveMovie({
-    movie_id: movie.id,
-    title: movie.title,
-    poster_url: movie.poster_path,
-  });
+    setLoading(false);
 
-  setLoading(false);
-
-  if (success) {
-    alert("✅ Added to My List");
-  } else {
-    alert("❌ Failed to save movie");
+    if (success) {
+      setSaved(true);
+    }
   }
-}}
-  disabled={loading}
-  className="border border-white px-8 py-4 rounded-lg hover:bg-white hover:text-black transition disabled:opacity-50"
->
-  {loading ? "Saving..." : "+ My List"}
-</button>
+
+  return (
+    <button
+      onClick={handleSave}
+      disabled={loading || saved}
+      className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-8 py-4 font-semibold text-white backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black disabled:opacity-70"
+    >
+      {saved ? (
+        <>
+          <Check size={20} />
+          Added
+        </>
+      ) : (
+        <>
+          <Plus size={20} />
+          {loading ? "Saving..." : "My List"}
+        </>
+      )}
+    </button>
   );
 }

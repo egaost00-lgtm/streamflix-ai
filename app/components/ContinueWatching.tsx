@@ -1,65 +1,87 @@
+
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
+type Movie = {
+  id: string;
+  title: string;
+  poster: string;
+};
 
 export default function ContinueWatching() {
-  const movies = [
-    {
-      title: "Batman",
-      progress: 80,
-      image: "https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg",
-    },
-    {
-      title: "Interstellar",
-      progress: 55,
-      image: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
-    },
-    {
-      title: "Oppenheimer",
-      progress: 100,
-      image: "https://image.tmdb.org/t/p/w500/ptpr0kGAckfQkJeJIt8st5dglvd.jpg",
-    },
-  ];
+  const [movie, setMovie] = useState<Movie | null>(null);
+
+  useEffect(() => {
+    const data = localStorage.getItem("continueWatching");
+
+    if (data) {
+      setMovie(JSON.parse(data));
+    }
+  }, []);
 
   return (
     <section className="px-16 pt-10 pb-16">
+
       <h2 className="mb-6 text-3xl font-bold text-white">
         ▶ Continue Watching
       </h2>
 
-      <div className="flex gap-6 overflow-x-auto pb-2">
-        {movies.map((movie) => (
-          <div
-            key={movie.title}
-            className="group w-52 shrink-0 cursor-pointer transition duration-300 hover:scale-105"
-          >
-            <div className="relative overflow-hidden rounded-2xl">
-              <Image
-                src={movie.image}
-                alt={movie.title}
-                width={208}
-                height={312}
-                className="h-[312px] w-full object-cover transition duration-500 group-hover:scale-110"
-              />
+      {!movie ? (
+        <div className="flex h-72 items-center justify-center rounded-3xl border border-white/10 bg-zinc-900">
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+          <div className="text-center">
 
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <h3 className="font-bold text-white">{movie.title}</h3>
+            <div className="mb-4 text-5xl">🎬</div>
 
-                <div className="mt-3 h-1.5 rounded-full bg-white/20">
-                  <div
-                    className="h-1.5 rounded-full bg-red-600"
-                    style={{ width: `${movie.progress}%` }}
-                  />
-                </div>
+            <h3 className="text-2xl font-bold">
+              Nothing to Continue
+            </h3>
 
-                <p className="mt-2 text-sm text-gray-300">
-                  {movie.progress}% watched
-                </p>
-              </div>
-            </div>
+            <p className="mt-2 text-gray-400">
+              Start watching a movie and it will appear here.
+            </p>
+
           </div>
-        ))}
-      </div>
+
+        </div>
+      ) : (
+
+        <Link
+          href={`/watch/${movie.id}`}
+          className="group block w-56 transition hover:scale-105"
+        >
+
+          <div className="overflow-hidden rounded-2xl">
+
+            <Image
+              src={movie.poster}
+              alt={movie.title}
+              width={220}
+              height={330}
+              className="h-[330px] w-full object-cover transition group-hover:scale-110"
+            />
+
+          </div>
+
+          <h3 className="mt-4 text-xl font-bold text-white">
+            {movie.title}
+          </h3>
+
+          <div className="mt-3 h-2 rounded-full bg-zinc-700">
+            <div className="h-2 w-1/2 rounded-full bg-red-600" />
+          </div>
+
+          <p className="mt-2 text-sm text-gray-400">
+            Resume Watching
+          </p>
+
+        </Link>
+
+      )}
+
     </section>
   );
 }

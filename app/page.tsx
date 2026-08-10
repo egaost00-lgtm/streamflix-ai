@@ -1,5 +1,6 @@
 "use client";
 
+import HeroSlider from "./components/HeroSlider";
 import Footer from "./components/Footer";
 import Top10Today from "./components/Top10Today";
 import ContinueWatching from "./components/ContinueWatching";
@@ -7,6 +8,7 @@ import { useState } from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import MovieRow from "./components/MovieRow";
+import MyMoviesRow from "./components/MyMoviesRow";
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -18,9 +20,10 @@ export default function Home() {
         setSearch={setSearch}
       />
 
-      <Hero />
+      <HeroSlider />
       <ContinueWatching />
  <Top10Today /> 
+ <MyMoviesRow />
       <MovieRow
         title="🔥 Trending Now"
         search={search}
