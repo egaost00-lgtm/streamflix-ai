@@ -145,11 +145,27 @@ export default function AIPage() {
               "Poster generation failed."
           );
         }
+const finalPosterUrl = String(
+  posterData.imageUrl || ""
+).trim();
 
-        setMovie({
-          ...generatedMovie,
-          posterUrl: posterData.imageUrl,
-        });
+console.log(
+  "✅ FINAL POSTER URL:",
+  finalPosterUrl
+);
+
+if (!finalPosterUrl) {
+  throw new Error(
+    "FAL returned an empty poster URL."
+  );
+}
+
+setMovie({
+  ...generatedMovie,
+  posterUrl: finalPosterUrl,
+});
+
+setPosterError(false);
 
         setPosterError(false);
       } catch (error) {
@@ -552,24 +568,33 @@ ${movie.story}`;
             <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-950 shadow-[0_30px_120px_rgba(0,0,0,0.6)]">
 
               <div className="relative min-h-[560px] md:min-h-[720px]">
+{/* POSTER */}
 
-                {/* POSTER */}
+{movie.posterUrl && !posterError && (
+  <img
+    src={movie.posterUrl}
+    alt={`${movie.title} poster`}
+    className="absolute inset-0 h-full w-full object-cover"
+    referrerPolicy="no-referrer"
+    onLoad={() => {
+      console.log("✅ POSTER LOADED:", movie.posterUrl);
+      setPosterError(false);
+    }}
+    onError={(event) => {
+      console.error(
+        "❌ POSTER FAILED TO LOAD:",
+        movie.posterUrl
+      );
 
-                {movie.posterUrl && !posterError && (
-                  <img
-                    src={movie.posterUrl}
-                    alt={`${movie.title} poster`}
-                    className="absolute inset-0 h-full w-full object-cover"
-                    onLoad={() => {
-                      console.log("POSTER LOADED");
-                      setPosterError(false);
-                    }}
-                    onError={() => {
-                      console.error("POSTER FAILED");
-                      setPosterError(true);
-                    }}
-                  />
-                )}
+      console.error(
+        "❌ IMAGE ERROR:",
+        event
+      );
+
+      setPosterError(true);
+    }}
+  />
+)}
 
                 {/* POSTER LOADING */}
 
@@ -603,9 +628,7 @@ ${movie.story}`;
 
                 {/* POSTER ERROR */}
 
-                {!posterLoading &&
-                  (!movie.posterUrl ||
-                    posterError) && (
+              {!posterLoading && !movie.posterUrl && (
                     <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-zinc-950 via-red-950/30 to-purple-950">
 
                       <div className="text-center">
