@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
-export default function SearchPage() {
+function SearchContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
@@ -54,7 +54,6 @@ export default function SearchPage() {
   return (
     <main className="min-h-screen bg-black px-6 md:px-10 lg:px-16 pt-28 pb-12 text-white">
 
-      {/* Header */}
       <div className="mx-auto mb-12 max-w-5xl">
 
         <button
@@ -166,5 +165,19 @@ export default function SearchPage() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-black pt-28 text-center text-white">
+          Loading search...
+        </main>
+      }
+    >
+      <SearchContent />
+    </Suspense>
   );
 }
