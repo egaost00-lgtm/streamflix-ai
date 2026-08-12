@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           success: false,
-          error: "FAL_KEY is missing from environment variables.",
+          error: "FAL_KEY is missing from .env.local / Vercel.",
         },
         { status: 500 }
       );
@@ -66,7 +66,7 @@ VISUAL STYLE:
 - Professional cinematography
 
 COMPOSITION:
-- Vertical theatrical poster
+- Vertical theatrical movie poster
 - Portrait 4:3 composition
 - Strong central focal subject
 - Cinematic foreground
@@ -101,6 +101,11 @@ IMPORTANT:
         num_images: 1,
         output_format: "jpeg",
         enable_safety_checker: true,
+
+        // IMPORTANT:
+        // Return the generated image as a data URI
+        // instead of exposing the FAL hosted URL.
+        sync_mode: true,
       },
     });
 
@@ -116,13 +121,16 @@ IMPORTANT:
       return NextResponse.json(
         {
           success: false,
-          error: "FAL generated the poster but no image URL was returned.",
+          error: "FAL generated the poster but no image was returned.",
         },
         { status: 500 }
       );
     }
 
-    console.log("Poster image URL received:", image.url);
+    console.log(
+      "Poster image received:",
+      image.content_type
+    );
 
     return NextResponse.json({
       success: true,
@@ -134,7 +142,9 @@ IMPORTANT:
     return NextResponse.json(
       {
         success: false,
-        error: error?.message || "Poster generation failed.",
+        error:
+          error?.message ||
+          "Poster generation failed.",
       },
       { status: 500 }
     );
