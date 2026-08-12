@@ -6,7 +6,7 @@ export default function RemoveButton({ id }: { id: number }) {
   return (
     <button
       onClick={async () => {
-        const ok = await deleteMovie(id);
+        const ok = await deleteMovie(String(id));
 
         if (ok) {
           location.reload();
