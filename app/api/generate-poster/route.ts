@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           success: false,
-          error: "FAL_KEY is missing from .env.local",
+          error: "FAL_KEY is missing from environment variables.",
         },
         { status: 500 }
       );
@@ -92,34 +92,17 @@ IMPORTANT:
 
     console.log("Starting FAL poster generation...");
 
-    const result = await fal.subscribe(
-      "fal-ai/flux/dev",
-      {
-        input: {
-          prompt,
-
-          image_size: "portrait_4_3",
-
-          num_inference_steps: 28,
-
-          guidance_scale: 3.5,
-
-          num_images: 1,
-
-          output_format: "jpeg",
-
-          enable_safety_checker: true,
-
-          /*
-           * IMPORTANT
-           *
-           * FAL returns the generated media as a
-           * data URI instead of a temporary URL.
-           */
-          sync_mode: true,
-        },
-      }
-    );
+    const result = await fal.subscribe("fal-ai/flux/dev", {
+      input: {
+        prompt,
+        image_size: "portrait_4_3",
+        num_inference_steps: 28,
+        guidance_scale: 3.5,
+        num_images: 1,
+        output_format: "jpeg",
+        enable_safety_checker: true,
+      },
+    });
 
     const data = result.data as any;
 
@@ -128,42 +111,30 @@ IMPORTANT:
     const image = data?.images?.[0];
 
     if (!image?.url) {
-      console.error(
-        "FAL returned no image:",
-        data
-      );
+      console.error("FAL returned no image:", data);
 
       return NextResponse.json(
         {
           success: false,
-          error:
-            "FAL generated the poster but no image was returned.",
+          error: "FAL generated the poster but no image URL was returned.",
         },
         { status: 500 }
       );
     }
 
-    console.log(
-      "Poster image received:",
-      image.content_type
-    );
+    console.log("Poster image URL received:", image.url);
 
     return NextResponse.json({
       success: true,
       imageUrl: image.url,
     });
   } catch (error: any) {
-    console.error(
-      "POSTER GENERATION ERROR:",
-      error
-    );
+    console.error("POSTER GENERATION ERROR:", error);
 
     return NextResponse.json(
       {
         success: false,
-        error:
-          error?.message ||
-          "Poster generation failed.",
+        error: error?.message || "Poster generation failed.",
       },
       { status: 500 }
     );
